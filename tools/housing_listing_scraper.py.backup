@@ -305,12 +305,12 @@ def scrape_craigslist_listings(preferences, search_url=None, max_results=10):
 
     try:
         soup = BeautifulSoup(resp.text, "html.parser")
-        nodes = soup.select("li.cl-static-search-result")[:max_results]
+        nodes = soup.select("li.cl-search-result, li.result-row")[:max_results]
         if not nodes:
             out["errors"].append("Craigslist: no listing nodes parsed from HTML")
             return out
         for idx, node in enumerate(nodes):
-            title_node = node.select_one(".title")
+            title_node = node.select_one("a.cl-app-anchor, a.result-title")
             price_node = node.select_one(".priceinfo, .result-price")
             hood_node = node.select_one(".result-hood")
 
