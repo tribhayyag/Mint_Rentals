@@ -23,3 +23,7 @@ Thumbs.db
 
 # Test artifacts
 tools/tests/_compiled/
+
+# Local user preference state
+tools/last_preferences.json
+tools/last_preferences.json.meta.json

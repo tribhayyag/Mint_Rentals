@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import type {
   UserPreferences,
   TransportationPreference,
@@ -137,6 +138,21 @@ export function Preferences({ preferences: p }: Props) {
       : p.roommates === 0
       ? "Living alone"
       : `${p.roommates} roommate${p.roommates === 1 ? "" : "s"}`;
+
+  useEffect(() => {
+    const url = (import.meta.env.VITE_SAVE_PREFS_URL as string) || "http://localhost:8000/save_preferences";
+    try {
+      fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(p),
+      }).catch(() => {
+        /* best-effort only */
+      });
+    } catch (err) {
+      /* ignore in read-only UI */
+    }
+  }, [p]);
 
   return (
     <div className="px-8 py-6 min-h-screen">
