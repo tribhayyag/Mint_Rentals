@@ -311,15 +311,15 @@ def scrape_craigslist_listings(preferences, search_url=None, max_results=10):
             return out
         for idx, node in enumerate(nodes):
             title_node = node.select_one(".title")
-            price_node = node.select_one(".priceinfo, .result-price")
-            hood_node = node.select_one(".result-hood")
+            price_node = node.select_one(".price")
+            hood_node = node.select_one(".location")
 
             raw = {
                 "listing_id": "craigslist_" + str(idx),
                 "title": title_node.get_text(strip=True) if title_node else "unknown",
                 "price": _extract_price(price_node.get_text(strip=True)) if price_node else None,
                 "neighborhood": hood_node.get_text(strip=True).strip("()") if hood_node else "unknown",
-                "url": title_node["href"] if title_node and title_node.has_attr("href") else "unknown",
+                "url": node.select_one("a")["href"] if node.select_one("a") and node.select_one("a").has_attr("href") else "unknown",
                 "address": "unknown",
                 "general_location": preferences.get("general_location", "unknown"),
                 "property_type": "unknown",

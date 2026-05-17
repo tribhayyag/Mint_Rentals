@@ -58,7 +58,7 @@ export default function App() {
         amenities: preferences.amenities,
       };
 
-      const response = await fetch("http://127.0.0.1:8000/search-listings", {
+      const response = await fetch(import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000" + "/search-listings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -166,7 +166,7 @@ export default function App() {
     if (backendListing.amenities?.furnished === "yes") tags.push("Furnished");
     if (backendListing.amenities?.laundry === "in-unit") tags.push("In-unit Laundry");
     if (backendListing.amenities?.laundry === "shared") tags.push("Shared Laundry");
-    if (backendListing.amenities?.pet_friendly === "yes") tags.append("Pet Friendly");
+    if (backendListing.amenities?.pet_friendly === "yes") tags.push("Pet Friendly");
     
     return {
       id: backendListing.listing_id,
