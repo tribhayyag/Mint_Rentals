@@ -3,7 +3,9 @@
   "compilerOptions": {
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "types": ["node"]
+    "types": ["node"],
+    "noEmit": false,
+    "allowImportingTsExtensions": false
   },
   "include": ["vite.config.ts"]
 }

@@ -30,3 +30,8 @@ tools/last_preferences.json.meta.json
 
 # Nested Vercel deploy checkout
 Mint_Rentals/
+
+# TypeScript build artifacts
+*.tsbuildinfo
+frontend/vite.config.d.ts
+frontend/vite.config.js
