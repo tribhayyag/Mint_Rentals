@@ -63,6 +63,49 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
     def do_POST(self):
         parsed = urlparse(self.path)
+
+        # POST /search-listings - accept a preference payload and return mock listings
+        if parsed.path == "/search-listings":
+            length = int(self.headers.get("Content-Length", 0))
+            body = self.rfile.read(length) if length > 0 else b""
+            try:
+                payload = json.loads(body.decode("utf-8")) if body else {}
+            except Exception:
+                self._set_headers(400)
+                self.wfile.write(b"{\"error\": \"invalid json\"}")
+                return
+
+            # persist the received search payload for tools/inspection
+            try:
+                search_path = os.path.join(os.path.dirname(PREFERENCES_PATH), "last_search.json")
+                os.makedirs(os.path.dirname(search_path), exist_ok=True)
+                fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname(search_path))
+                with os.fdopen(fd, "w", encoding="utf-8") as tmpf:
+                    json.dump(payload, tmpf, indent=2, ensure_ascii=False)
+                os.replace(tmp_path, search_path)
+            except Exception:
+                pass
+
+            # Return a simple mocked listings response (for testing OpenClaw integration)
+            mock = {
+                "status": "ok",
+                "listings": [
+                    {
+                        "id": "mock-1",
+                        "title": "Furnished private room near UCSC",
+                        "rent": 1400,
+                        "neighborhood": "Westside",
+                        "commute_minutes": 25,
+                        "amenities": {"parking": True, "furnished": True},
+                        "source": "mock"
+                    }
+                ]
+            }
+            self._set_headers(200)
+            self.wfile.write(json.dumps(mock).encode("utf-8"))
+            return
+
+        # Existing save_preferences behavior
         if parsed.path != "/save_preferences":
             self._set_headers(404)
             self.wfile.write(b"{\"error\": \"not found\"}")
