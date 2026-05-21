@@ -102,14 +102,15 @@ export function Dashboard(props: Props) {
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[1.5fr_1fr]">
-        {props.compareIds.length > 0 && (
-          <ComparePanel
-            listings={selectedCompareListings}
-            onClearCompare={props.onClearCompare}
-          />
-        )}
         <AgentReasoningPanel />
       </div>
+
+      {props.compareIds.length > 0 && (
+        <CompareModal
+          listings={selectedCompareListings}
+          onClearCompare={props.onClearCompare}
+        />
+      )}
 
       {props.mapExpanded && (
         <ExpandedMapOverlay
@@ -123,7 +124,7 @@ export function Dashboard(props: Props) {
   );
 }
 
-function ComparePanel({
+function CompareModal({
   listings,
   onClearCompare,
 }: {
@@ -131,82 +132,84 @@ function ComparePanel({
   onClearCompare: () => void;
 }) {
   return (
-    <section className="rounded-3xl bg-white border border-frame p-5 shadow-soft">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="font-semibold">Compare selected listings</h2>
-          <p className="text-xs text-muted mt-1">
-            Compare rent, commute, safety, and match notes side-by-side.
-          </p>
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-auto border border-frame">
+        <div className="sticky top-0 bg-white border-b border-frame p-5 flex items-center justify-between rounded-t-3xl">
+          <div>
+            <h2 className="font-semibold text-lg">Compare selected listings</h2>
+            <p className="text-xs text-muted mt-1">
+              Compare rent, commute, safety, and match notes side-by-side.
+            </p>
+          </div>
+          <button
+            onClick={onClearCompare}
+            className="rounded-full border border-frame bg-cream px-4 py-2 text-xs font-medium text-muted hover:border-mint-deep hover:text-ink transition-colors flex-shrink-0"
+          >
+            Close
+          </button>
         </div>
-        <button
-          onClick={onClearCompare}
-          className="rounded-full border border-frame bg-cream px-4 py-2 text-xs font-medium text-muted hover:border-mint-deep hover:text-ink transition-colors"
-        >
-          Clear selection
-        </button>
-      </div>
 
-      <div className="mt-5 overflow-x-auto">
-        <div
-          className={`grid gap-4 ${
-            listings.length === 1
-              ? "grid-cols-1"
-              : listings.length === 2
-              ? "grid-cols-2"
-              : "grid-cols-3"
-          }`}
-        >
-          {listings.map((listing) => (
-            <div
-              key={listing.id}
-              className="rounded-3xl border border-frame bg-beige/70 p-4"
-            >
+        <div className="p-5">
+          <div
+            className={`grid gap-4 ${
+              listings.length === 1
+                ? "grid-cols-1"
+                : listings.length === 2
+                ? "grid-cols-2"
+                : "grid-cols-3"
+            }`}
+          >
+            {listings.map((listing) => (
+              <div
+                key={listing.id}
+                className="rounded-3xl border border-frame bg-beige/70 p-4"
+              >
                 <div className="font-semibold text-sm">{listing.title}</div>
-              <div className="text-[11px] text-muted mt-1">
-                {listing.address}
+                <div className="text-[11px] text-muted mt-1">
+                  {listing.address}
+                </div>
+                <div className="mt-4 space-y-2 text-sm">
+                  <div className="text-sm font-medium">{summarizeTradeoff(listing, listings)}</div>
+                  <div>
+                    <span className="font-medium">Rent:</span>{" "}
+                    ${listing.rent.toLocaleString()}/mo
+                  </div>
+                  <div>
+                    <span className="font-medium">Commute:</span>{" "}
+                    {listing.commuteMinutes ?? "Unknown"} min
+                  </div>
+                  <div>
+                    <span className="font-medium">Distance:</span>{" "}
+                    {listing.distanceMiles ?? "Unknown"} mi
+                  </div>
+                  <div>
+                    <span className="font-medium">Type:</span>{" "}
+                    {listing.housingType ?? "Unknown"}
+                  </div>
+                  <div>
+                    <span className="font-medium">Room:</span>{" "}
+                    {listing.roomType ?? "Unknown"}
+                  </div>
+                  <div>
+                    <span className="font-medium">Safety:</span>{" "}
+                    {listing.safetyRating ?? "Unknown"}/10
+                  </div>
+                  <div>
+                    <span className="font-medium">Source:</span>{" "}
+                    {listing.dataSource ?? "Mock data"}
+                  </div>
+                  <div className="text-xs text-muted">
+                    {listing.matchNotes?.length
+                      ? listing.matchNotes.join(", ")
+                      : "No match notes available."}
+                  </div>
+                </div>
               </div>
-              <div className="mt-4 space-y-2 text-sm">
-                <div className="text-sm font-medium">{summarizeTradeoff(listing, listings)}</div>
-                <div>
-                  <span className="font-medium">Rent:</span>{" "}
-                  ${listing.rent.toLocaleString()}/mo
-                </div>
-                <div>
-                  <span className="font-medium">Commute:</span>{" "}
-                  {listing.commuteMinutes ?? "Unknown"} min
-                </div>
-                <div>
-                  <span className="font-medium">Distance:</span>{" "}
-                  {listing.distanceMiles ?? "Unknown"} mi
-                </div>
-                <div>
-                  <span className="font-medium">Type:</span>{" "}
-                  {listing.housingType ?? "Unknown"}
-                </div>
-                <div>
-                  <span className="font-medium">Room:</span>{" "}
-                  {listing.roomType ?? "Unknown"}
-                </div>
-                <div>
-                  <span className="font-medium">Safety:</span>{" "}
-                  {listing.safetyRating ?? "Unknown"}/10
-                </div>
-                <div>
-                  <span className="font-medium">Source:</span>{" "}
-                  {listing.dataSource ?? "Mock data"}
-                </div>
-                <div className="text-xs text-muted">
-                  {listing.matchNotes?.length
-                    ? listing.matchNotes.join(", ")
-                    : "No match notes available."}
-                </div>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
 
