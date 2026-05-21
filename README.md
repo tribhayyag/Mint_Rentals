@@ -19,11 +19,19 @@ The app helps students describe what kind of housing they want, then turns that 
 - Tools: Python
 - Agent/runtime: OpenClaw
 - Model: Nemotron via Ollama on DGX Spark
+## Live demo
+
+The frontend is deployed on Vercel (live demo):
+
+https://frontend-zeta-weld-v7f6db8jp1.vercel.app/
 
 ## Backend
+
+Run the backend locally for full tool integration:
 
 ```bash
 cd backend
 source venv/bin/activate
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload# Mint Rentals
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
 
