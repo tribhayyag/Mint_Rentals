@@ -37,4 +37,4 @@ export type Listing = {
   saved: boolean;
 };
 
-export type ViewName = "dashboard" | "saved" | "preferences";
+export type ViewName = "dashboard" | "saved" | "preferences" | "compare";

@@ -9,6 +9,7 @@ type Props = {
   onToggleSave: (id: string) => void;
   onToggleCompare: (id: string) => void;
   compareLimitReached: boolean;
+  onNavigateToCompare: () => void;
 };
 
 export function SavedListings({
@@ -19,6 +20,7 @@ export function SavedListings({
   onToggleSave,
   onToggleCompare,
   compareLimitReached,
+  onNavigateToCompare,
 }: Props) {
   const saved = listings.filter((l) => l.saved);
 

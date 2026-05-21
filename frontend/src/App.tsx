@@ -4,6 +4,7 @@ import type { UserPreferences } from "./types/preferences";
 import { Sidebar } from "./components/Sidebar";
 import { Dashboard } from "./components/Dashboard";
 import { SavedListings } from "./components/SavedListings";
+import { CompareView } from "./components/CompareView";
 import { Preferences } from "./components/Preferences";
 import { Onboarding } from "./components/Onboarding";
 import { generateListings } from "./lib/generateListings";
@@ -98,6 +99,7 @@ export default function App() {
         onChangeView={setActiveView}
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed((c) => !c)}
+        compareCount={compareIds.length}
       />
       <main className="flex-1 min-w-0">
         {activeView === "dashboard" && (
@@ -122,6 +124,7 @@ export default function App() {
                 preferences={preferences}
                 onRefine={handleRefine}
                 onClearCompare={() => setCompareIds([])}
+                onNavigateToCompare={() => setActiveView("compare")}
               />
             )}
           </>
@@ -135,6 +138,16 @@ export default function App() {
             onToggleSave={handleToggleSave}
             onToggleCompare={handleToggleCompare}
             compareLimitReached={compareIds.length >= 3}
+            onNavigateToCompare={() => setActiveView("compare")}
+          />
+        )}
+        {activeView === "compare" && (
+          <CompareView
+            listings={listings}
+            compareIds={compareIds}
+            onToggleSave={handleToggleSave}
+            onToggleCompare={handleToggleCompare}
+            onClearCompare={() => setCompareIds([])}
           />
         )}
         {activeView === "preferences" && (

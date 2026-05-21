@@ -6,6 +6,7 @@ type NavItem = { id: ViewName; label: string; letter: string };
 const navItems: NavItem[] = [
   { id: "dashboard", label: "Dashboard", letter: "D" },
   { id: "saved", label: "Saved Listings", letter: "S" },
+  { id: "compare", label: "Compare", letter: "C" },
   { id: "preferences", label: "Preferences", letter: "P" },
 ];
 
@@ -14,6 +15,7 @@ type Props = {
   onChangeView: (v: ViewName) => void;
   collapsed: boolean;
   onToggleCollapse: () => void;
+  compareCount: number;
 };
 
 export function Sidebar({
@@ -21,6 +23,7 @@ export function Sidebar({
   onChangeView,
   collapsed,
   onToggleCollapse,
+  compareCount,
 }: Props) {
   return (
     <aside
@@ -64,15 +67,29 @@ export function Sidebar({
               }`}
             >
               <span
-                className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-semibold shrink-0 ${
+                className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-semibold shrink-0 relative ${
                   active
                     ? "bg-mint text-ink"
                     : "bg-white text-muted border border-frame"
                 }`}
               >
                 {item.letter}
+                {item.id === "compare" && compareCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {compareCount}
+                  </span>
+                )}
               </span>
-              {!collapsed && <span className="truncate">{item.label}</span>}
+              {!collapsed && (
+                <span className="truncate flex-1 flex items-center gap-2">
+                  {item.label}
+                  {item.id === "compare" && compareCount > 0 && (
+                    <span className="text-xs bg-orange-soft text-orange-900 px-1.5 py-0.5 rounded-full font-medium ml-auto">
+                      {compareCount}
+                    </span>
+                  )}
+                </span>
+              )}
             </button>
           );
         })}
