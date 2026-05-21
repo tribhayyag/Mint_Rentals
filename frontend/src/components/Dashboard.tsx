@@ -3,6 +3,7 @@ import type { UserPreferences } from "../types/preferences";
 import { KanbanBoard } from "./KanbanBoard";
 import { MapPanel } from "./MapPanel";
 import { ExpandedMapOverlay } from "./ExpandedMapOverlay";
+import summarizeTradeoff from "../lib/tradeoffs";
 
 type Props = {
   listings: Listing[];
@@ -161,11 +162,12 @@ function ComparePanel({
               key={listing.id}
               className="rounded-3xl border border-frame bg-beige/70 p-4"
             >
-              <div className="font-semibold text-sm">{listing.title}</div>
+                <div className="font-semibold text-sm">{listing.title}</div>
               <div className="text-[11px] text-muted mt-1">
                 {listing.address}
               </div>
               <div className="mt-4 space-y-2 text-sm">
+                <div className="text-sm font-medium">{summarizeTradeoff(listing, listings)}</div>
                 <div>
                   <span className="font-medium">Rent:</span>{" "}
                   ${listing.rent.toLocaleString()}/mo

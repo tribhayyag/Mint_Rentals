@@ -25,6 +25,8 @@ The frontend is deployed on Vercel (live demo):
 
 https://frontend-zeta-weld-v7f6db8jp1.vercel.app/
 
+Read the portfolio case study: [CASE_STUDY.md](CASE_STUDY.md)
+
 ## Backend
 
 Run the backend locally for full tool integration:
