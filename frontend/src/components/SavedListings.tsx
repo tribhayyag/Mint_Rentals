@@ -4,15 +4,21 @@ import { ListingCard } from "./ListingCard";
 type Props = {
   listings: Listing[];
   selectedListingId: string | null;
+  compareIds: string[];
   onSelectListing: (id: string | null) => void;
   onToggleSave: (id: string) => void;
+  onToggleCompare: (id: string) => void;
+  compareLimitReached: boolean;
 };
 
 export function SavedListings({
   listings,
   selectedListingId,
+  compareIds,
   onSelectListing,
   onToggleSave,
+  onToggleCompare,
+  compareLimitReached,
 }: Props) {
   const saved = listings.filter((l) => l.saved);
 
@@ -37,10 +43,13 @@ export function SavedListings({
               key={l.id}
               listing={l}
               selected={l.id === selectedListingId}
+              compareSelected={compareIds.includes(l.id)}
+              compareDisabled={compareLimitReached}
               onSelect={() =>
                 onSelectListing(l.id === selectedListingId ? null : l.id)
               }
               onToggleSave={() => onToggleSave(l.id)}
+              onToggleCompare={() => onToggleCompare(l.id)}
             />
           ))}
         </div>

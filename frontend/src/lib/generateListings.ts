@@ -371,7 +371,7 @@ function buildListing(
     reasonBits.length > 0
       ? "Matches: " + reasonBits.join(", ") + "."
       : "Fits your preferences.";
-
+  const safetyRating = Math.round(6 + rng() * 3);
   return {
     id: `gen_${idx}`,
     title,
@@ -386,6 +386,10 @@ function buildListing(
     matchScore: score,
     tags,
     aiReason,
+    safetyRating,
+    safetySource: "Mock data",
+    dataSource: "Mock data",
+    matchNotes: reasonBits,
     lat,
     lng,
     saved: false,

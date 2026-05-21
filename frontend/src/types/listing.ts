@@ -27,6 +27,10 @@ export type Listing = {
   matchScore?: number | null;
   tags: string[];
   aiReason?: string;
+  safetyRating?: number;
+  safetySource?: string;
+  dataSource?: string;
+  matchNotes?: string[];
   imageUrl?: string;
   lat: number;
   lng: number;

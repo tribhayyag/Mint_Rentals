@@ -4,15 +4,21 @@ import { ListingCard } from "./ListingCard";
 type Props = {
   listings: Listing[];
   selectedListingId: string | null;
+  compareIds: string[];
   onSelectListing: (id: string | null) => void;
   onToggleSave: (id: string) => void;
+  onToggleCompare: (id: string) => void;
+  compareLimitReached: boolean;
 };
 
 export function KanbanBoard({
   listings,
   selectedListingId,
+  compareIds,
   onSelectListing,
   onToggleSave,
+  onToggleCompare,
+  compareLimitReached,
 }: Props) {
   const bestMatches = [...listings]
     .sort((a, b) => (b.matchScore ?? -1) - (a.matchScore ?? -1))
@@ -66,12 +72,15 @@ export function KanbanBoard({
                 key={listing.id}
                 listing={listing}
                 selected={listing.id === selectedListingId}
+                compareSelected={compareIds.includes(listing.id)}
+                compareDisabled={compareLimitReached}
                 onSelect={() =>
                   onSelectListing(
                     listing.id === selectedListingId ? null : listing.id
                   )
                 }
                 onToggleSave={() => onToggleSave(listing.id)}
+                onToggleCompare={() => onToggleCompare(listing.id)}
               />
             ))}
           </div>

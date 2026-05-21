@@ -17,31 +17,75 @@ export default function App() {
   const [mapExpanded, setMapExpanded] = useState(false);
   const [listings, setListings] = useState<Listing[]>([]);
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
+  const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [compareIds, setCompareIds] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleToggleSave = (id: string) =>
-    setListings((prev) =>
-      prev.map((l) => (l.id === id ? { ...l, saved: !l.saved } : l))
-    );
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem("mint_saved_ids");
+      if (stored) setSavedIds(JSON.parse(stored));
+    } catch {
+      /* ignore localStorage errors */
+    }
+  }, []);
+
+  useEffect(() => {
+    if (preferences === null) return;
+    setLoading(true);
+    const handle = window.setTimeout(() => {
+      const generated = generateListings(preferences).map((listing) => ({
+        ...listing,
+        saved: savedIds.includes(listing.id),
+      }));
+      setListings(generated);
+      setLoading(false);
+    }, 250);
+    return () => window.clearTimeout(handle);
+  }, [preferences]);
+
+  useEffect(() => {
+    window.localStorage.setItem("mint_saved_ids", JSON.stringify(savedIds));
+    if (preferences !== null) {
+      setListings((prev) =>
+        prev.map((listing) => ({
+          ...listing,
+          saved: savedIds.includes(listing.id),
+        }))
+      );
+    }
+  }, [savedIds, preferences]);
+
+  const handleToggleSave = (id: string) => {
+    setSavedIds((prev) => {
+      const next = prev.includes(id)
+        ? prev.filter((item) => item !== id)
+        : [...prev, id];
+      setListings((current) =>
+        current.map((listing) =>
+          listing.id === id
+            ? { ...listing, saved: !prev.includes(id) }
+            : listing
+        )
+      );
+      return next;
+    });
+  };
+
+  const handleToggleCompare = (id: string) =>
+    setCompareIds((prev) => {
+      if (prev.includes(id)) return prev.filter((item) => item !== id);
+      if (prev.length >= 3) return prev;
+      return [...prev, id];
+    });
 
   const handleSelectListing = (id: string | null) => setSelectedListingId(id);
 
   const handleRefine = () => {
     setPreferences(null);
     setListings([]);
+    setCompareIds([]);
   };
-
-  // Regenerate listings whenever preferences change. Pure client-side — no
-  // backend required. Brief loading state so the UI feels responsive.
-  useEffect(() => {
-    if (preferences === null) return;
-    setLoading(true);
-    const handle = setTimeout(() => {
-      setListings(generateListings(preferences));
-      setLoading(false);
-    }, 250);
-    return () => clearTimeout(handle);
-  }, [preferences]);
 
   if (preferences === null) {
     return <Onboarding onSubmit={(p) => setPreferences(p)} />;
@@ -68,12 +112,16 @@ export default function App() {
               <Dashboard
                 listings={listings}
                 selectedListingId={selectedListingId}
+                compareIds={compareIds}
                 onSelectListing={handleSelectListing}
                 onToggleSave={handleToggleSave}
+                onToggleCompare={handleToggleCompare}
+                compareLimitReached={compareIds.length >= 3}
                 mapExpanded={mapExpanded}
                 onSetMapExpanded={setMapExpanded}
                 preferences={preferences}
                 onRefine={handleRefine}
+                onClearCompare={() => setCompareIds([])}
               />
             )}
           </>
@@ -82,8 +130,11 @@ export default function App() {
           <SavedListings
             listings={listings}
             selectedListingId={selectedListingId}
+            compareIds={compareIds}
             onSelectListing={handleSelectListing}
             onToggleSave={handleToggleSave}
+            onToggleCompare={handleToggleCompare}
+            compareLimitReached={compareIds.length >= 3}
           />
         )}
         {activeView === "preferences" && (
